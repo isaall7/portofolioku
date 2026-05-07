@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ade Faisal - Photography</title>
+  <meta name="description" content="Koleksi fotografi Ade Faisal, mulai dari portrait, landscape, street, hingga nature." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body data-page="fotoku">
+  <div id="loader">
+    <div class="loader-inner">
+      <div class="loader-logo">AF</div>
+      <div class="loader-bar"></div>
+    </div>
+  </div>
+
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a class="nav-logo" href="tentangku.html">AF.</a>
+      <div class="nav-links">
+        <a class="nav-link" href="tentangku.html">Tentang Saya</a>
+        <a class="nav-link" href="designku.html">Desain Grafis</a>
+        <a class="nav-link active" href="fotoku.html">Photography</a>
+      </div>
+      <div class="nav-right">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#127769;</button>
+        <button class="hamburger" id="hamburger" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a class="nav-link" href="tentangku.html">Tentang Saya</a>
+    <a class="nav-link" href="designku.html">Desain Grafis</a>
+    <a class="nav-link active" href="fotoku.html">Photography</a>
+  </div>
+
+  <div class="page active page-transition">
+    <div class="page-header fade-in">
+      <div class="section-label">Portfolio</div>
+      <h1 class="heading-xl"><span class="text-accent">Photo</span>graphy</h1>
+      <p>Koleksi foto yang mengabadikan momen, alam, dan kehidupan sehari-hari.</p>
+    </div>
+
+    <div class="section" style="padding-top:0;">
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-group="foto" data-filter="all">Semua</button>
+        <button class="filter-tab" data-group="foto" data-filter="portrait">Portrait</button>
+        <button class="filter-tab" data-group="foto" data-filter="landscape">Landscape</button>
+        <button class="filter-tab" data-group="foto" data-filter="street">Street</button>
+        <button class="filter-tab" data-group="foto" data-filter="nature">Nature</button>
+      </div>
+
+      <div class="gallery-grid photo-grid" id="fotoGrid"></div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-logo">Ade Faisal</div>
+      <nav class="footer-links">
+        <a href="tentangku.html">Tentang</a>
+        <a href="designku.html">Desain</a>
+        <a class="active" href="fotoku.html">Foto</a>
+      </nav>
+      <p class="footer-copy">&copy; 2025 Ade Faisal - Dibuat dengan hati di Bandung</p>
+    </footer>
+  </div>
+
+  <div class="modal" id="imageModal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <button class="modal-close" aria-label="Tutup">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-content">
+      <img id="modalImage" src="" alt="Preview foto" style="display:none;" />
+      <div
+        id="imageModalPlaceholder"
+        style="width:min(600px,85vw);aspect-ratio:1;background:var(--bg-card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--text-muted);padding:40px;"
+      >
+        <div style="font-size:2.5rem;">Photo</div>
+        <div id="modalCaption" style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:600;color:var(--text-primary);">Preview</div>
+        <p style="font-size:0.85rem;text-align:center;line-height:1.6;">
+          Tambahkan path gambar di file <code style="background:var(--accent-glow);padding:2px 6px;border-radius:4px;color:var(--accent);">script.js</code> untuk menampilkan foto kamu di sini.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
