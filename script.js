@@ -212,6 +212,12 @@ const designFiles = [
   'demokrasi [A8E0536].png',
   'design 1. [370F4DA].png',
   'design ICT [91B21EB].png',
+  'bagi kopi.png',
+  'cap kaki 3.png',
+  'chatime design.png',
+  'golda design.png',
+  'matcha design.png',
+  'Nescafe design.png',
   'gabut [821BE71].png',
   'gfx [652743A].png',
   'ict [9BF98EA].png',
@@ -241,7 +247,7 @@ const designFiles = [
   'Proyek Baru 84 [5C82FA3].png',
   'Proyek Baru 9 [28C5736].png',
   'reunian [920D8CA].png',
-  'Revan risaldi [74A0A35].png'
+  'Revan risaldi [74A0A35].png',
 ];
 
 const photoFiles = [
