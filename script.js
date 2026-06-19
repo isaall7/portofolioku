@@ -111,6 +111,14 @@ const Modal = {
     if (video) {
       video.pause();
       video.currentTime = 0;
+      video.removeAttribute('src');
+      video.style.display = 'none';
+    }
+
+    const iframe = modal.querySelector('iframe');
+    if (iframe) {
+      iframe.removeAttribute('src');
+      iframe.style.display = 'none';
     }
 
     this.activeModal = null;
@@ -133,6 +141,51 @@ const Modal = {
 
 function buildMediaPath(folder, filename) {
   return encodeURI(`fotoku/${folder}/${filename}`);
+}
+
+function isExternalUrl(value) {
+  return /^https?:\/\//i.test(value);
+}
+
+function getYouTubeId(url) {
+  try {
+    const parsedUrl = new URL(url);
+    const host = parsedUrl.hostname.replace(/^www\./, '');
+
+    if (host === 'youtu.be') {
+      return parsedUrl.pathname.split('/').filter(Boolean)[0] || '';
+    }
+
+    if (host === 'youtube.com' || host === 'm.youtube.com') {
+      if (parsedUrl.pathname.startsWith('/shorts/')) {
+        return parsedUrl.pathname.split('/').filter(Boolean)[1] || '';
+      }
+
+      if (parsedUrl.pathname.startsWith('/embed/')) {
+        return parsedUrl.pathname.split('/').filter(Boolean)[1] || '';
+      }
+
+      return parsedUrl.searchParams.get('v') || '';
+    }
+  } catch (error) {
+    return '';
+  }
+
+  return '';
+}
+
+function buildVideoItem(filename, index) {
+  const youtubeId = getYouTubeId(filename);
+  const isYoutube = Boolean(youtubeId);
+  const src = isExternalUrl(filename) ? filename : buildMediaPath('videoku', filename);
+
+  return {
+    src,
+    label: isYoutube ? `YouTube Video ${index + 1}` : formatLabel(filename),
+    type: isYoutube ? 'youtube' : 'local',
+    embedSrc: isYoutube ? `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0` : '',
+    thumbnail: isYoutube ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg` : ''
+  };
 }
 
 function formatLabel(filename) {
@@ -333,22 +386,11 @@ const photoFiles = [
 ];
 
 const videoFiles = [
-  '12 moment [88E8E33].mp4',
-  'alat klinometer sederhana kelompok 7, Ade - Raka - Reyhan [5BB44F2].mp4',
-  'CLASS XI RPL 3 [F0D750F].mp4',
-  'ekologi [50563C9].mp4',
-  'iklan youtube music [F98FE74].mp4',
-  'kenangan. [0E8D024].mp4',
-  'lembang - karawang [97C0C09].mp4',
-  'lomba ig reels 1 [970C815].mp4',
-  'Mejikuhibiniiu [2E526EA].mp4',
-  'pkn - bobibos [35C76A1].mp4',
-  'rancabali - situ patenggang [867F015].mp4',
-  'RANCABALI [03D27F7].mp4',
-  'si anjay [EF99C18].mp4',
-  'tahura [B89E68D].mp4',
-  'terimakasih kelas 10 [26C18FC].mp4',
-  'video terimakasih 12 [3CA5E81].mp4'
+  {
+    label: 'Koleksi Videography',
+    src: 'https://drive.google.com/drive/u/3/folders/1t8MCTwipeYgYruvDxATELQNVbOefsswy',
+    type: 'drive'
+  }
 ];
 
 const Gallery = {
@@ -363,10 +405,7 @@ const Gallery = {
       label: formatLabel(filename),
       category: guessPhotoCategory(filename)
     })),
-    videoku: videoFiles.map(filename => ({
-      src: buildMediaPath('videoku', filename),
-      label: formatLabel(filename)
-    }))
+    videoku: videoFiles
   },
 
   renderDesain(filter = 'all') {
@@ -444,25 +483,23 @@ const Gallery = {
     grid.innerHTML = '';
 
     this.data.videoku.forEach((item, index) => {
-      const card = document.createElement('div');
-      card.className = 'gallery-item fade-in';
+      const card = document.createElement('a');
+      card.href = item.src;
+      card.target = '_blank';
+      card.rel = 'noopener noreferrer';
+      card.className = 'gallery-item video-drive-card fade-in';
       card.style.transitionDelay = `${(index % 4) * 0.05}s`;
       card.style.aspectRatio = '16/9';
       card.classList.add('is-loaded');
       card.innerHTML = `
-        <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg, rgba(40,90,72,0.18), rgba(40,90,72,0.42));">
-          <div style="text-align:center;color:var(--text-secondary);padding:16px;">
-            <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.92);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 8px 24px rgba(0,0,0,0.2);">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#1a1a1a"><path d="M8 5v14l11-7z"/></svg>
-            </div>
-            <div style="font-size:0.86rem;font-weight:600;">${item.label}</div>
-            <div style="font-size:0.74rem;margin-top:6px;opacity:0.7;">Klik untuk memutar video</div>
-          </div>
+        <div class="video-thumb-placeholder drive-thumb">
+          <div class="drive-icon" aria-hidden="true">G</div>
+          <div class="drive-title">${item.label}</div>
+          <div class="drive-subtitle">Buka folder Google Drive</div>
         </div>
-        <div class="gallery-overlay"><span>Play ${item.label}</span></div>
+        <div class="gallery-overlay"><span>Buka Google Drive</span></div>
       `;
 
-      card.addEventListener('click', () => this.openVideoModal(item.src, item.label));
       grid.appendChild(card);
     });
 
@@ -486,19 +523,31 @@ const Gallery = {
     Modal.open('imageModal');
   },
 
-  openVideoModal(src, label) {
+  openVideoModal(item) {
     const video = document.getElementById('modalVideo');
+    const iframe = document.getElementById('modalYoutube');
     const caption = document.getElementById('videoCaption');
     const placeholder = document.getElementById('videoPlaceholder');
-    if (!video) return;
+    if (!video || !iframe) return;
 
-    video.src = src;
-    video.style.display = 'block';
     if (placeholder) placeholder.style.display = 'none';
-    video.play().catch(() => {});
+
+    if (item.type === 'youtube') {
+      video.pause();
+      video.removeAttribute('src');
+      video.style.display = 'none';
+      iframe.src = item.embedSrc;
+      iframe.style.display = 'block';
+    } else {
+      iframe.removeAttribute('src');
+      iframe.style.display = 'none';
+      video.src = item.src;
+      video.style.display = 'block';
+      video.play().catch(() => {});
+    }
 
     if (caption) {
-      caption.textContent = label || 'Video Preview';
+      caption.textContent = item.label || 'Video Preview';
     }
 
     Modal.open('videoModal');
